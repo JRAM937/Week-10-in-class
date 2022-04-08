@@ -1,6 +1,6 @@
 ---
 title: "COVID 19 Tracking"
-author: "YOUR NAME"
+author: "Juan Ramirez Jr."
 output: html_document
 ---
 
@@ -45,11 +45,23 @@ cases %>%
 ```
 
 
+
 Here is data from the US Census Bureau on the state estimated population size. Why might this data be useful?
 ```{r}
 pop <- read_csv("USpop2019.csv")
 ```
 
+```{r}
+cases %>%
+  group_by(state) %>%
+  mutate(case_daily = c(cases[1], diff(cases))) %>%
+  arrange(date) %>%
+  mutate(case_7 = rollmean(case_daily, k = 7, fill = NA, align = "right")) %>%
+  ungroup() %>% 
+  left_join(pop, by = c("state" = "NAME",
+                        "fips" = "GEOID")) %>% 
+  write_csv("clean_cases.csv")
+```
 
 ## Part 1 - Identify Research Questions
 Identify 2-3 potential research questions you could try to answer using the provided data (or if you had additional data).
