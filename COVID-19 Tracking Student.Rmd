@@ -1,0 +1,119 @@
+---
+title: "COVID 19 Tracking"
+author: "YOUR NAME"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = "")
+library(tidyverse)
+library(lubridate)
+library(geofacet) #install for NY Times Map
+library(zoo) #install to deal with time series
+library(scales) #can make nicer axis labels for graphs
+```
+
+## Setup - United States COVID-19 Cases and Deaths
+
+Here are the NY Times data on cumulative cases by date and state.
+```{r}
+cases <- read_csv("https://github.com/nytimes/covid-19-data/raw/master/us-states.csv")
+```
+
+Note that both `cases` and `deaths` are cumulative by date.
+
+If we want to extract the daily cases we can use the following code which will calculate the difference in (cumulative) cases for one day minus the previous day using the `diff()` function 
+```{r}
+cases %>%
+  group_by(state) %>%
+  mutate(case_daily = c(cases[1], diff(cases)),
+         death_daily = c(deaths[1], diff(deaths))) %>%
+  ungroup()
+```
+
+
+It is also common to report the 7-day moving average to account for reporting delays over the weekends and delays testing results reports.
+
+```{r}
+cases %>%
+  group_by(state) %>%
+  mutate(case_daily = c(cases[1], diff(cases))) %>%
+  #filter(!(date == as.Date("2021-03-08") & state == "Missouri")) %>% 
+  arrange(date) %>%
+  mutate(case_7 = rollmean(case_daily, k = 7, fill = NA)) %>%
+  ungroup()
+```
+
+
+Here is data from the US Census Bureau on the state estimated population size. Why might this data be useful?
+```{r}
+pop <- read_csv("USpop2019.csv")
+```
+
+
+## Part 1 - Identify Research Questions
+Identify 2-3 potential research questions you could try to answer using the provided data (or if you had additional data).
+
+
+
+
+
+
+
+
+
+## Part 2 - Outline the Process
+Pick one of the research questions above. Write a brief outline of the steps you would need to take to 1) prepare the data for analysis, and 2) analyze/visualize the data. 
+
+Data Preparation  
+
+- Step 1:  
+- Step 2:  
+
+
+Data Analysis/Visualization  
+
+- Step 1:  
+- Step 2:  
+
+
+
+## Part 3 - Start Coding
+Start to translate your outline into code. You may need to look back at cheatsheets, previous notes, or google items.  Start simple first and then add complication.
+
+```{r}
+#data preparation
+```
+
+
+
+```{r}
+#data visualization
+```
+
+
+Now take what you have created and think about ways to modify your visualization to make it more interesting or engaging, to clean it up, add details, or highlight details.  
+
+```{r}
+#revised visualization
+```
+
+
+## Part 4 - Look Back, Look Ahead
+Look back at what you have done, were you able to adequately answer your original research question? Look ahead at what steps you might take next to improve on your analysis or to modify your existing visualization (even if you are not sure how to do it in R).
+
+
+
+
+
+
+
+## Extra Extra
+Recently, the NY Times provided a graph of cases rising across the US (scroll down to "After month of progress...")
+https://www.nytimes.com/interactive/2021/04/06/us/variants-cases-spread.html
+
+
+A fellow statistician recreated the graphic using R:
+https://livefreeordichotomize.com/2021/04/07/nytimes-map-how-to/
+
+I have already provided the US Census data so you can skip those steps, but give it a try, replicating her code to see if you can recreate the graphic. Comment the code as you determine what each line does.
