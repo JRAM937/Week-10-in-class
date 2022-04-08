@@ -51,7 +51,7 @@ Here is data from the US Census Bureau on the state estimated population size. W
 pop <- read_csv("USpop2019.csv")
 ```
 
-```{r}
+```{r eval = FALSE}
 cases %>%
   group_by(state) %>%
   mutate(case_daily = c(cases[1], diff(cases))) %>%
@@ -66,8 +66,21 @@ cases %>%
 ## Part 1 - Identify Research Questions
 Identify 2-3 potential research questions you could try to answer using the provided data (or if you had additional data).
 
+```{r}
+cases_avg <- read_csv("clean_cases.csv")
+```
 
+Which state had the highest number of positive COVID cases in the year 2020?
 
+Which state had the highest average/daily death rate?
+
+Which state was the safest?
+
+Which state had the most rapid increase in cases?
+
+How do high population states compare to low population states?
+
+What were the worst months of the pandemic?
 
 
 
@@ -77,10 +90,12 @@ Identify 2-3 potential research questions you could try to answer using the prov
 ## Part 2 - Outline the Process
 Pick one of the research questions above. Write a brief outline of the steps you would need to take to 1) prepare the data for analysis, and 2) analyze/visualize the data. 
 
+>What were the worst months of the pandemic?
+
 Data Preparation  
 
-- Step 1:  
-- Step 2:  
+- Step 1:  Create (mutate) a new variable to represent the month and year.
+- Step 2:  Group by month/year and sum up cases per month or average daily cases per month (either works).
 
 
 Data Analysis/Visualization  
@@ -95,6 +110,25 @@ Start to translate your outline into code. You may need to look back at cheatshe
 
 ```{r}
 #data preparation
+cases_avg %>% 
+  mutate(month_year = lubridate::ymd(date),
+         month = month(date, label=TRUE),
+         year = year(date)) %>% 
+         unite("month_year", month:year, sep = " ", remove = FALSE) %>% group_by(month_year) %>% 
+  summarise(total = sum(case_daily, na.rm = TRUE),
+            average = mean(case_daily, na.rm = TRUE)) %>% 
+  arrange(desc(total)) %>% 
+  mutate(month_year_date = my(month_year)) %>% 
+  filter(total >= 2576066) %>% 
+  ggplot(aes(y = fct_reorder(month_year, total), x = total)) +
+  geom_col(aes(fill = factor(year(month_year_date)))) +
+  labs(x = "Total Cases Reported", y = "Month and Year",
+       title = "Worst Months of the Pandemic",
+       subtitle = "Top 10 months by case totals",
+       caption = "Sourse: NY Times",
+       fill = "Year") +
+  scale_x_continuous(labels = scales::comma) +
+  theme_bw()
 ```
 
 
