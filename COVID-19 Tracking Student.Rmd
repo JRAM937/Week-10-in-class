@@ -1,7 +1,7 @@
 ---
 title: "COVID 19 Tracking"
 author: "Juan Ramirez Jr."
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -125,12 +125,26 @@ cases_avg %>%
   labs(x = "Total Cases Reported", y = "Month and Year",
        title = "Worst Months of the Pandemic",
        subtitle = "Top 10 months by case totals",
-       caption = "Sourse: NY Times",
+       caption = "Source: NY Times",
        fill = "Year") +
   scale_x_continuous(labels = scales::comma) +
   theme_bw()
 ```
 
+## Part 3.2 - Another example
+For this next chunk, I will make a visual to answer the question "Which state had the highest average/daily death rate?"
+```{r}
+#data preparation
+cases_avg %>% 
+  group_by(case_daily) %>% 
+  filter(case_daily >= 90000) %>% 
+  arrange(desc(case_daily)) %>% 
+  ggplot(aes(y = case_daily, x = state)) +
+  geom_col() +
+  labs(x = "State", y = "Daily Cases",
+       title = "States with the highest avg daily death rate") +
+  theme_bw()
+```
 
 
 ```{r}
@@ -148,7 +162,7 @@ Now take what you have created and think about ways to modify your visualization
 ## Part 4 - Look Back, Look Ahead
 Look back at what you have done, were you able to adequately answer your original research question? Look ahead at what steps you might take next to improve on your analysis or to modify your existing visualization (even if you are not sure how to do it in R).
 
-
+Yes, I was able to answer both questions quite well!
 
 
 
